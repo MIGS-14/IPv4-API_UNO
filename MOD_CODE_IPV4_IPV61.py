@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import socket
 import speedtest
+import pytest
 import requests
 from flask import Flask, render_template
 

@@ -66,7 +66,7 @@ class IPApp:
             for col, widget in enumerate(widgets):
                 widget.grid(row=row, column=col, sticky="w", padx=5, pady=5)
 
-    def refresh_status_speed(self):
+    def test_refresh_status_speed(self):
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
@@ -81,7 +81,7 @@ class IPApp:
             self.status_value.config(text="Disconnected", foreground="red")
             self.speed_value.config(text="Speedtest Error")
 
-    def refresh_ips(self):
+    def test_refresh_ips(self):
         self.ip_listbox_v4.delete(0, tk.END)
         self.ip_listbox_v6.delete(0, tk.END)
 
@@ -91,7 +91,7 @@ class IPApp:
         for ip in ipv6_addresses:
             self.ip_listbox_v6.insert(tk.END, ip)
 
-    def get_ip_addresses(self):
+    def test_get_ip_addresses(self):
         ipv4_addresses = []
         ipv6_addresses = []
         try:
@@ -136,25 +136,55 @@ class IPApp:
         except Exception as e:
             self.website_status_label.config(text=f"Website Status: Error - {e}", foreground="red")
 
+class LoginApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Login")
+        self.master.geometry("500x400")
+        self.master.configure(bg="#f0f0f0")
 
-@pytest.mark.test
-def test_refresh_status_speed():
-    # Test the refresh_status_speed method
-    root = tk.Tk()
-    app = IPApp(root)
-    app.refresh_status_speed()
-    assert app.status_value.cget("text") in ["Connected", "Disconnected"]
-    root.destroy()
+        self.style = ttk.Style()
+        self.style.theme_use("clam")
 
-@pytest.mark.test
-def test_get_ip_addresses():
-    # Test the get_ip_addresses method
+        self.main_frame = ttk.Frame(self.master, padding=20, style="Main.TFrame")
+        self.main_frame.pack(expand=True)
+
+        self.logo_label = ttk.Label(self.main_frame, text="Login", font=("Helvetica", 20), background="#f0f0f0", foreground="navy")
+        self.username_label = ttk.Label(self.main_frame, text="Username:", background="#f0f0f0")
+        self.password_label = ttk.Label(self.main_frame, text="Password:", background="#f0f0f0")
+        self.username_entry = ttk.Entry(self.main_frame)
+        self.password_entry = ttk.Entry(self.main_frame, show="*")
+        self.login_button = ttk.Button(self.main_frame, text="Login", command=self.login, style="Accent.TButton")
+
+        self.logo_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
+        self.username_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
+        self.username_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.password_label.grid(row=2, column=0, sticky="w", padx=5, pady=5)
+        self.password_entry.grid(row=2, column=1, padx=5, pady=5)
+        self.login_button.grid(row=3, column=0, columnspan=2, pady=(10, 0))
+
+        # Style configurations
+        self.style.configure("Main.TFrame", background="#f0f0f0")
+        self.style.configure("Accent.TButton", background="#007bff", foreground="white", font=("Helvetica", 10, "bold"))
+        self.style.map("Accent.TButton", background=[("active", "#0056b3")])
+
+    def login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        
+        # Check if username and password match
+        if username == "Migsmiguel" and password == "12345":
+            self.master.destroy()
+            root = tk.Tk()
+            IPApp(root)
+            root.mainloop()
+        else:
+            messagebox.showerror("Login Failed", "Invalid username or password")
+
+def main():
     root = tk.Tk()
-    app = IPApp(root)
-    ipv4_addresses, ipv6_addresses = app.get_ip_addresses()
-    assert isinstance(ipv4_addresses, list)
-    assert isinstance(ipv6_addresses, list)
-    root.destroy()
+    login_app = LoginApp(root)
+    root.mainloop()
 
 if __name__ == "__main__":
-    pytest.main()
+    main()

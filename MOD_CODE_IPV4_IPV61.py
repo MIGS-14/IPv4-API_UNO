@@ -5,15 +5,17 @@ import socket
 import speedtest
 import requests
 from flask import Flask, render_template
+import pytest
 
-# Flask App
 app = Flask(__name__)
 
 @app.route('/')
 def index():
+    root = tk.Tk()
+    IPApp(root)
+    root.mainloop()
     return render_template('index.html')
 
-# tkinter App
 class IPApp:
     def __init__(self, master):
         self.master = master
@@ -175,15 +177,45 @@ class LoginApp:
         if username == "Migsmiguel" and password == "12345":
             self.master.destroy()
             root = tk.Tk()
-            IPApp(root)
+            app = IPApp(root)
             root.mainloop()
         else:
             messagebox.showerror("Login Failed", "Invalid username or password")
 
-def main():
+@pytest.fixture
+def app_instance():
+    root = tk.Tk()
+    app = IPApp(root)
+    yield app
+    root.destroy()
+
+def test_refresh_status_speed(app_instance):
+    app_instance.refresh_status_speed()
+    assert app_instance.status_value.cget("text") in ["Connected", "Disconnected"]
+    assert app_instance.speed_value.cget("text") != "Unknown"
+
+def test_get_ip_addresses(app_instance):
+    ipv4_addresses, ipv6_addresses = app_instance.get_ip_addresses()
+    assert isinstance(ipv4_addresses, list)
+    assert isinstance(ipv6_addresses, list)
+
+def test_add_ip(app_instance):
+    initial_count_v4 = app_instance.ip_listbox_v4.size()
+    initial_count_v6 = app_instance.ip_listbox_v6.size()
+    app_instance.ip_entry.insert(0, "192.168.1.1")
+    app_instance.add_ip()
+    assert app_instance.ip_listbox_v4.size() == initial_count_v4 + 1
+    app_instance.ip_entry.delete(0, tk.END)
+    app_instance.ip_entry.insert(0, "2001:0db8:85a3:0000:0000:8a2e:0370:7334")
+    app_instance.add_ip()
+    assert app_instance.ip_listbox_v6.size() == initial_count_v6 + 1
+
+def test_check_website_availability(app_instance):
+    app_instance.website_entry.insert(0, "http://www.example.com")
+    app_instance.check_website_availability()
+    assert app_instance.website_status_label.cget("text") in ["Website Status: Online", "Website Status: Offline", "Website Status: Error"]
+
+if __name__ == "__main__":
     root = tk.Tk()
     login_app = LoginApp(root)
     root.mainloop()
-
-if __name__ == "__main__":
-    main()

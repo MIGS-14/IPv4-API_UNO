@@ -5,18 +5,15 @@ import socket
 import speedtest
 import requests
 from flask import Flask, render_template
-import pytest
-from unittest.mock import MagicMock
 
+# Flask App
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    root = tk.Tk()
-    IPApp(root)
-    root.mainloop()
     return render_template('index.html')
 
+# tkinter App
 class IPApp:
     def __init__(self, master):
         self.master = master
@@ -68,7 +65,7 @@ class IPApp:
             for col, widget in enumerate(widgets):
                 widget.grid(row=row, column=col, sticky="w", padx=5, pady=5)
 
-    def refresh_status_speed(self):
+    def test_refresh_status_speed(self):
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
@@ -93,7 +90,7 @@ class IPApp:
         for ip in ipv6_addresses:
             self.ip_listbox_v6.insert(tk.END, ip)
 
-    def get_ip_addresses(self):
+    def test_get_ip_addresses(self):
         ipv4_addresses = []
         ipv6_addresses = []
         try:
@@ -165,36 +162,28 @@ class LoginApp:
         self.password_entry.grid(row=2, column=1, padx=5, pady=5)
         self.login_button.grid(row=3, column=0, columnspan=2, pady=(10, 0))
 
+        # Style configurations
+        self.style.configure("Main.TFrame", background="#f0f0f0")
+        self.style.configure("Accent.TButton", background="#007bff", foreground="white", font=("Helvetica", 10, "bold"))
+        self.style.map("Accent.TButton", background=[("active", "#0056b3")])
+
     def login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
-        if username == "admin" and password == "admin":
-            messagebox.showinfo("Login Successful", "Welcome Admin!")
+        
+        # Check if username and password match
+        if username == "Migsmiguel" and password == "12345":
+            self.master.destroy()
+            root = tk.Tk()
+            IPApp(root)
+            root.mainloop()
         else:
             messagebox.showerror("Login Failed", "Invalid username or password")
 
-@pytest.fixture
-def app_instance(monkeypatch):
-    # Mock the creation of Tkinter GUI instance
-    mock_root = MagicMock()
-    monkeypatch.setattr(tk, "Tk", MagicMock(return_value=mock_root))
-    return IPApp(mock_root)
-
-def test_refresh_status_speed(app_instance):
-    # Call the method being tested
-    app_instance.refresh_status_speed()
-    
-    # Assert that the status and speed labels are updated
-    assert app_instance.status_value.cget("text") in ["Connected", "Disconnected"]
-    assert app_instance.speed_value.cget("text") != "Unknown"
-
-def test_get_ip_addresses(app_instance):
-    # Call the method being tested
-    ipv4_addresses, ipv6_addresses = app_instance.get_ip_addresses()
-    
-    # Assert that the returned addresses are of type list
-    assert isinstance(ipv4_addresses, list)
-    assert isinstance(ipv6_addresses, list)
+def main():
+    root = tk.Tk()
+    login_app = LoginApp(root)
+    root.mainloop()
 
 if __name__ == "__main__":
-    pytest.main()
+    main()

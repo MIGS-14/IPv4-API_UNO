@@ -176,10 +176,8 @@ class LoginApp:
 @pytest.fixture
 def app_instance(monkeypatch):
     # Mock the creation of Tkinter GUI instance
-    mock_tk = MagicMock()
     mock_root = MagicMock()
-    mock_tk.return_value = mock_root
-    monkeypatch.setattr("tkinter.Tk", mock_tk)
+    monkeypatch.setattr(tk, "Tk", MagicMock(return_value=mock_root))
     return IPApp(mock_root)
 
 def test_refresh_status_speed(app_instance):

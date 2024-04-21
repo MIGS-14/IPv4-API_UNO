@@ -6,15 +6,14 @@ import speedtest
 import requests
 from flask import Flask, render_template
 
+# Flask App
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    root = tk.Tk()
-    IPApp(root)
-    root.mainloop()
     return render_template('index.html')
 
+# tkinter App
 class IPApp:
     def __init__(self, master):
         self.master = master
@@ -49,7 +48,7 @@ class IPApp:
         self.refresh_ips()
         self.refresh_status_speed()
 
-    def test_setup_layout(self):
+    def setup_layout(self):
         layout = [
             (self.status_label, self.status_value),
             (self.speed_label, self.speed_value),
@@ -66,7 +65,7 @@ class IPApp:
             for col, widget in enumerate(widgets):
                 widget.grid(row=row, column=col, sticky="w", padx=5, pady=5)
 
-    def test_refresh_status_speed(self):
+    def refresh_status_speed(self):
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
@@ -81,7 +80,7 @@ class IPApp:
             self.status_value.config(text="Disconnected", foreground="red")
             self.speed_value.config(text="Speedtest Error")
 
-    def test_refresh_ips(self):
+    def refresh_ips(self):
         self.ip_listbox_v4.delete(0, tk.END)
         self.ip_listbox_v6.delete(0, tk.END)
 
@@ -91,7 +90,7 @@ class IPApp:
         for ip in ipv6_addresses:
             self.ip_listbox_v6.insert(tk.END, ip)
 
-    def test_get_ip_addresses(self):
+    def get_ip_addresses(self):
         ipv4_addresses = []
         ipv6_addresses = []
         try:
@@ -110,7 +109,7 @@ class IPApp:
 
         return ipv4_addresses, ipv6_addresses
 
-    def test_add_ip(self):
+    def add_ip(self):
         ip_address = self.ip_entry.get()
         try:
             socket.inet_pton(socket.AF_INET, ip_address)
@@ -122,10 +121,10 @@ class IPApp:
             except OSError:
                 print("Invalid IP address")
 
-    def test_clear_website_entry(self, event):
+    def clear_website_entry(self, event):
         self.website_entry.delete(0, tk.END)
 
-    def test_check_website_availability(self):
+    def check_website_availability(self):
         website_url = self.website_entry.get()
         try:
             response = requests.head(website_url)
@@ -168,7 +167,7 @@ class LoginApp:
         self.style.configure("Accent.TButton", background="#007bff", foreground="white", font=("Helvetica", 10, "bold"))
         self.style.map("Accent.TButton", background=[("active", "#0056b3")])
 
-    def test_login(self):
+    def login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
         
@@ -176,7 +175,7 @@ class LoginApp:
         if username == "Migsmiguel" and password == "12345":
             self.master.destroy()
             root = tk.Tk()
-            app = IPApp(root)
+            IPApp(root)
             root.mainloop()
         else:
             messagebox.showerror("Login Failed", "Invalid username or password")

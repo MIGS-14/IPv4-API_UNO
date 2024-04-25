@@ -49,9 +49,6 @@ class IPApp:
         self.refresh_ips()
         self.refresh_status_speed()
 
-    def test_example(self):
-        assert 1 + 1 == 2
-
     def setup_layout(self):
         layout = [
             (self.status_label, self.status_value),
@@ -69,7 +66,7 @@ class IPApp:
             for col, widget in enumerate(widgets):
                 widget.grid(row=row, column=col, sticky="w", padx=5, pady=5)
 
-    def refresh_status_speed(self):
+    def test_refresh_status_speed(self):
         try:
             st = speedtest.Speedtest()
             st.get_best_server()

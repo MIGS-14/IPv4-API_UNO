@@ -92,7 +92,7 @@ class IPApp:
         for ip in ipv6_addresses:
             self.ip_listbox_v6.insert(tk.END, ip)
 
-    def test_get_ip_addresses(self):
+    def get_ip_addresses(self):
         ipv4_addresses = []
         ipv6_addresses = []
         try:

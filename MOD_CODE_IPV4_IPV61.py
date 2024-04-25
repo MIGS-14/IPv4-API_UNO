@@ -66,7 +66,7 @@ class IPApp:
             for col, widget in enumerate(widgets):
                 widget.grid(row=row, column=col, sticky="w", padx=5, pady=5)
 
-    def test_refresh_status_speed(self):
+    def refresh_status_speed(self):
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
@@ -91,7 +91,7 @@ class IPApp:
         for ip in ipv6_addresses:
             self.ip_listbox_v6.insert(tk.END, ip)
 
-    def get_ip_addresses(self):
+    def test_get_ip_addresses(self):
         ipv4_addresses = []
         ipv6_addresses = []
         try:

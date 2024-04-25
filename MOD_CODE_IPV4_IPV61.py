@@ -1,8 +1,19 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import socket
 import speedtest
 import requests
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    root = tk.Tk()
+    IPApp(root)
+    root.mainloop()
+    return render_template('index.html')
 
 class IPApp:
     def __init__(self, master):
@@ -55,7 +66,7 @@ class IPApp:
             for col, widget in enumerate(widgets):
                 widget.grid(row=row, column=col, sticky="w", padx=5, pady=5)
 
-    def refresh_status_speed(self):
+    def test_refresh_status_speed(self):
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
@@ -125,29 +136,55 @@ class IPApp:
         except Exception as e:
             self.website_status_label.config(text=f"Website Status: Error - {e}", foreground="red")
 
-def test_refresh_status_speed():
+class LoginApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Login")
+        self.master.geometry("500x400")
+        self.master.configure(bg="#f0f0f0")
+
+        self.style = ttk.Style()
+        self.style.theme_use("clam")
+
+        self.main_frame = ttk.Frame(self.master, padding=20, style="Main.TFrame")
+        self.main_frame.pack(expand=True)
+
+        self.logo_label = ttk.Label(self.main_frame, text="Login", font=("Helvetica", 20), background="#f0f0f0", foreground="navy")
+        self.username_label = ttk.Label(self.main_frame, text="Username:", background="#f0f0f0")
+        self.password_label = ttk.Label(self.main_frame, text="Password:", background="#f0f0f0")
+        self.username_entry = ttk.Entry(self.main_frame)
+        self.password_entry = ttk.Entry(self.main_frame, show="*")
+        self.login_button = ttk.Button(self.main_frame, text="Login", command=self.login, style="Accent.TButton")
+
+        self.logo_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
+        self.username_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
+        self.username_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.password_label.grid(row=2, column=0, sticky="w", padx=5, pady=5)
+        self.password_entry.grid(row=2, column=1, padx=5, pady=5)
+        self.login_button.grid(row=3, column=0, columnspan=2, pady=(10, 0))
+
+        # Style configurations
+        self.style.configure("Main.TFrame", background="#f0f0f0")
+        self.style.configure("Accent.TButton", background="#007bff", foreground="white", font=("Helvetica", 10, "bold"))
+        self.style.map("Accent.TButton", background=[("active", "#0056b3")])
+
+    def login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        
+        # Check if username and password match
+        if username == "Migsmiguel" and password == "12345":
+            self.master.destroy()
+            root = tk.Tk()
+            app = IPApp(root)
+            root.mainloop()
+        else:
+            messagebox.showerror("Login Failed", "Invalid username or password")
+
+def main():
     root = tk.Tk()
-    app = IPApp(root)
-    try:
-        st = speedtest.Speedtest()
-        st.get_best_server()
-        ping = st.results.ping
-        download_speed = st.download() / 10**6
-        upload_speed = st.upload() / 10**6
-
-        app.status_value.config(text="Connected", foreground="green")
-        app.speed_value.config(text=f"Ping: {ping:.2f} ms | Download: {download_speed:.2f} Mbps | Upload: {upload_speed:.2f} Mbps")
-
-        assert app.status_value['text'] == "Connected"
-        assert "Ping: 10.00 ms" in app.speed_value['text']
-        assert "Download: 1.00 Mbps" in app.speed_value['text']
-        assert "Upload: 1.00 Mbps" in app.speed_value['text']
-
-    except Exception as e:
-        app.status_value.config(text="Disconnected", foreground="red")
-        app.speed_value.config(text="Speedtest Error")
-
+    login_app = LoginApp(root)
     root.mainloop()
 
 if __name__ == "__main__":
-    test_refresh_status_speed()
+    main()

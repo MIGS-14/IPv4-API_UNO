@@ -26,5 +26,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run pytest
-        run: pytest
+      - name: Run pytest with Xvfb
+        run: xvfb-run -a pytest
